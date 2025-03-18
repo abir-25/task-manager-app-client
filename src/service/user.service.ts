@@ -8,7 +8,7 @@ class UserService {
   constructor(private http: HttpService) {}
 
   async getUserInfo() {
-    const result = await this.http.post<UserInfo>(`get-user-info`);
+    const result = await this.http.get<UserInfo>(`get-user-info`);
     if (result.status) {
       return result.data;
     }

@@ -1,0 +1,103 @@
+/* Calendar Header Styles */
+.compact-calendar .rbc-toolbar {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.compact-calendar .rbc-toolbar button {
+  color: hsl(var(--primary));
+  border-color: hsl(var(--primary) / 0.2);
+  font-size: 0.875rem;
+}
+
+.compact-calendar .rbc-toolbar button:hover {
+  background-color: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+.compact-calendar .rbc-toolbar button.rbc-active {
+  background-color: hsl(var(--primary));
+  color: white;
+  border-color: hsl(var(--primary));
+}
+
+/* Calendar Grid Styles */
+.compact-calendar .rbc-header {
+  padding: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border-bottom: 1px solid hsl(var(--primary) / 0.2);
+}
+
+.compact-calendar .rbc-month-view {
+  border-radius: 0.5rem;
+  border-color: hsl(var(--primary) / 0.2);
+}
+
+.compact-calendar .rbc-month-row {
+  min-height: 6rem;
+}
+
+.compact-calendar .rbc-today {
+  background-color: hsl(var(--accent) / 0.1);
+}
+
+.compact-calendar .rbc-off-range-bg {
+  background-color: hsl(var(--muted) / 0.3);
+}
+
+/* Calendar Event Styles */
+.compact-calendar .calendar-event {
+  background-color: hsl(var(--primary));
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  padding: 0.125rem 0.375rem;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.compact-calendar .calendar-event:hover {
+  background-color: hsl(var(--primary) / 0.9);
+  transform: translateY(-1px);
+  z-index: 2;
+}
+
+.compact-calendar .rbc-event.rbc-selected {
+  background-color: hsl(var(--primary));
+}
+
+/* Calendar Navigation Styles */
+.compact-calendar .rbc-btn-group {
+  gap: 0.25rem;
+}
+
+.compact-calendar .rbc-btn-group button {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Date Cell Styles */
+.compact-calendar .rbc-date-cell {
+  padding: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.compact-calendar .rbc-date-cell.rbc-now {
+  color: hsl(var(--primary));
+  font-weight: 600;
+}
+
+.compact-calendar .rbc-row-segment {
+  padding: 0.125rem 0.25rem;
+}
+.compact-calendar .rbc-event {
+  background-color: hsl(var(--primary));
+}
+
+.compact-calendar .rbc-event-content {
+  position: relative;
+}

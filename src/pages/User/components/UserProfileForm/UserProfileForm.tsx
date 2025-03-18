@@ -44,7 +44,6 @@ export const UserProfileForm = ({ data, onCancel }: UserProfileFormProps) => {
       name: data.name || "",
       phone: data.phone || "",
       profileImg: data.profileImgUrl || null,
-      id: data.id,
     },
   });
 
@@ -70,10 +69,8 @@ export const UserProfileForm = ({ data, onCancel }: UserProfileFormProps) => {
   };
 
   const onSubmit = (values: UpdateUserProfileFormType) => {
-    const payload: UpdateUserProfileFormType = {
-      ...values,
-      id: data.id,
-    };
+    const payload: UpdateUserProfileFormType = { ...values };
+    console.log(payload);
     updateUser(payload, {
       onSuccess: (data) => {
         updateUserInfo(data);

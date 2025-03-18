@@ -1,5 +1,4 @@
 import { SignupFormType } from "@/pages/Auth/Signup/types";
-import { LoginApiResponse } from "@/types/api-response.types";
 import { UserInfo } from "@/types/types";
 import { toast } from "react-toastify";
 import { apiPublicClient } from "./httpModule/client";
@@ -9,7 +8,7 @@ class AuthService {
   constructor(private http: HttpService) {}
 
   async signUp(payload: SignupFormType) {
-    const result = await this.http.post<LoginApiResponse>(`signup`, payload);
+    const result = await this.http.post<UserInfo>(`signup`, payload);
 
     if (result.status) {
       toast.success(result.message);
@@ -21,7 +20,7 @@ class AuthService {
   }
 
   async login(payload: SignupFormType) {
-    const result = await this.http.post<LoginApiResponse>(`login`, payload);
+    const result = await this.http.post<UserInfo>(`login`, payload);
     if (result.status) {
       toast.success(result.message);
       return result.data;

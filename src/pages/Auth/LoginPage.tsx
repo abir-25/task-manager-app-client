@@ -37,11 +37,10 @@ export const LoginPage = () => {
   const onSubmit = async (values: SignupFormType) => {
     signupMutation(values, {
       onSuccess: async (data) => {
+        console.log({ data });
         hydrateStore(data);
 
-        const userInfo = await userService.getUserInfo({
-          userId: data.userInfo.id,
-        });
+        const userInfo = await userService.getUserInfo();
         updateUser(userInfo);
 
         navigate("/");
@@ -104,14 +103,6 @@ export const LoginPage = () => {
                   </div>
                 </FormControl>
                 <FormMessage />
-                <div className="mt-2">
-                  <Link
-                    to="/forget-password"
-                    className="text-sm text-blue-600 hover:text-blue-500"
-                  >
-                    Forgot Password?
-                  </Link>
-                </div>
               </FormItem>
             )}
           />

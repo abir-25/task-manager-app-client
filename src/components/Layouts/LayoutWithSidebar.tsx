@@ -1,7 +1,6 @@
 import { PrimarySidebar } from "@/components/Sidebar/PrimarySidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { DEFAULT_THEME_COLOR, setThemeColor } from "@/lib/theme";
-import { organizationQueryService } from "@/service/queries/organization.queries";
 import { useGlobalStore } from "@/store/global-store";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";

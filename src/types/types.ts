@@ -1,12 +1,12 @@
 export interface UserInfo {
   id: number;
   username: string;
-  name: string | "";
-  phone: string | "";
-  status: string;
+  name: string | null;
+  phone: string | null;
+  status: number;
   jwToken: string;
   profileImgUrl: string | null;
-  createDate: string;
+  createDate: string | null;
   updatedDate: string | null;
 }
 

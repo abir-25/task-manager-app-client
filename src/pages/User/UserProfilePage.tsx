@@ -1,20 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useGlobalStore } from "@/store/global-store";
-import {
-  BadgeCheck,
-  Briefcase,
-  Calendar,
-  Mail,
-  MapPin,
-  Pencil,
-  Phone,
-} from "lucide-react";
+import { Mail, Pencil, Phone } from "lucide-react";
 import { useState } from "react";
 import { UserProfileForm } from "./components/UserProfileForm/UserProfileForm";
 
 import { userQueryService } from "@/service/queries/user.queries";
-import dayjs from "dayjs";
 import { UserProfileSkeleton } from "./components/UserProfileSkeleton";
 export const UserProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -87,7 +78,7 @@ export const UserProfilePage = () => {
                 </Avatar>
                 <div className="mt-4 space-y-2">
                   <h2 className="text-md font-semibold text-slate-600">
-                    {userInfo?.username}
+                    {userInfo?.name}
                   </h2>
                 </div>
               </div>
@@ -101,11 +92,18 @@ export const UserProfilePage = () => {
               <h3 className="text-xl font-semibold mb-6 text-slate-800">
                 Personal Information
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
                 <InfoCard
                   icon={<Phone className="h-5 w-5" />}
                   label="Phone"
-                  value={userInfo?.phone}
+                  value={userInfo?.phone ? userInfo?.phone : "N/A"}
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-8 mt-3">
+                <InfoCard
+                  icon={<Mail className="h-5 w-5" />}
+                  label="Email"
+                  value={userInfo?.username ? userInfo?.username : "N/A"}
                 />
               </div>
             </div>

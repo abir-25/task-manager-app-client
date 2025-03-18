@@ -1,11 +1,10 @@
 import { UserInfo } from "@/types/types";
 import { create } from "zustand";
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
-import { LoginApiResponse } from "../types/api-response.types";
 
 interface GlobalStore {
   userInfo: UserInfo | null;
-  hydrateStore: (data: LoginApiResponse) => void;
+  hydrateStore: (data: UserInfo) => void;
   clearStore: () => void;
   updateUserInfo: (updatedData: Partial<UserInfo>) => void;
   isSidebarExpanded: boolean;
@@ -19,7 +18,7 @@ export const useGlobalStore = create<GlobalStore>()(
         userInfo: null,
         hydrateStore: (data) =>
           set({
-            userInfo: data.userInfo,
+            userInfo: data,
           }),
         clearStore: () =>
           set({

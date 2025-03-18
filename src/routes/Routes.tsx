@@ -50,6 +50,14 @@ const components = {
     name: "UserProfilePageLazy",
     fallback: <FullPageLoader />,
   }),
+  DashboardLazy: RouteLazyFactory({
+    factory: () =>
+      import("@/pages/Dashboard/Dashboard").then((m) => ({
+        default: m.Dashboard,
+      })),
+    name: "DashboardLazy",
+    fallback: <FullPageLoader />,
+  }),
 };
 
 export const Routes = () => {
@@ -59,6 +67,10 @@ export const Routes = () => {
       path: "/",
       Component: components.LayoutWithSidebarLazy,
       children: [
+        {
+          path: "/",
+          Component: components.DashboardLazy,
+        },
         {
           path: "/tasks",
           Component: components.TaskManagementLazy,
