@@ -24,7 +24,7 @@ export const Dashboard = () => {
 
       <div className="grid gap-4">
         <div className="grid gap-4 grid-cols-12">
-          <div className="col-span-12 md:col-span-7">
+          <div className="col-span-12 md:col-span-12">
             {isTaskStatusReportLoading ? (
               <TaskStatusReportSkeleton />
             ) : (

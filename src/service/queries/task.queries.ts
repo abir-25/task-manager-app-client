@@ -7,8 +7,17 @@ export const GET_TASK_INFO_BY_ID = "GET_TASK_INFO_BY_ID";
 
 const useGetTaskList = (payload: getTaskInfoDTO) => {
   return useQuery({
-    queryKey: [GET_TASK_LIST],
+    queryKey: [GET_TASK_LIST, payload.status, payload.dueDate, payload.search],
     queryFn: () => taskService.getAllTask(payload),
+    select: (data) => {
+      const toDoTasks = data.filter((task) => task.status === "To Do");
+      const inProgressTasks = data.filter(
+        (task) => task.status === "In Progress"
+      );
+      const doneTasks = data.filter((task) => task.status === "Done");
+
+      return [toDoTasks, inProgressTasks, doneTasks];
+    },
   });
 };
 

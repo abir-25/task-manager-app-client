@@ -11,9 +11,11 @@ class TaskService extends WithUserID {
   }
 
   async getAllTask(payload: getTaskInfoDTO) {
-    const result = await this.http.post<TaskInfo[]>(`get-all-task`, {
-      payload,
-    });
+    const result = await this.http.get<TaskInfo[]>(
+      `get-task-list?status=${payload.status ?? ""}&dueDate=${
+        payload.dueDate ?? ""
+      }&searchKey=${payload.search ?? ""}`
+    );
 
     if (result.status) {
       return result.data;
