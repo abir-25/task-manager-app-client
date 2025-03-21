@@ -29,9 +29,7 @@ export const SidebarSkeleton = () => {
         </SidebarMenu>
       </SidebarHeader>
 
-      {/* Main Navigation Skeleton */}
       <SidebarContent className="px-2">
-        {/* Primary Navigation Group */}
         <SidebarGroup className="pb-4">
           <SidebarMenu>
             {Array.from({ length: 3 }).map((_, index) => (
@@ -49,7 +47,6 @@ export const SidebarSkeleton = () => {
           </SidebarMenu>
         </SidebarGroup>
 
-        {/* Secondary Navigation Group */}
         <SidebarGroup className="pb-4">
           <div className="mb-2 px-4">
             <Skeleton className="h-3 w-16 animate-pulse opacity-70" />
@@ -71,7 +68,6 @@ export const SidebarSkeleton = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* User Profile Skeleton */}
       <SidebarGroup className="mt-auto px-2 pb-4">
         <SidebarMenu className="hover:bg-accent/50 rounded-lg transition-colors">
           <SidebarMenuItem>

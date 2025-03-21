@@ -1,4 +1,4 @@
-import { CreateTaskDTO, getTaskInfoDTO, UpdateTaskDTO } from "@/types/api.dto";
+import { CreateTaskDTO, getTaskInfoDTO, UpdateTaskDTO, UpdateTaskPosition } from "@/types/api.dto";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { taskService } from "../task.service";
 
@@ -47,10 +47,17 @@ const useDeleteTask = () => {
   });
 };
 
+const useUpdateTaskPosition = () => {
+  return useMutation({
+    mutationFn: (payload: UpdateTaskPosition) => taskService.updateTaskPosition(payload),
+  });
+};
+
 export const taskQueryService = {
   useGetTaskList,
   useGetTaskInfoByID,
   useCreateTask,
   useUpdateTask,
   useDeleteTask,
+  useUpdateTaskPosition
 };

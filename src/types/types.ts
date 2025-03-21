@@ -19,6 +19,7 @@ export enum StatusEnum {
 export type TaskInfo = {
   id: number;
   userId: number;
+  position: number;
   name: string;
   description: string;
   status: string;

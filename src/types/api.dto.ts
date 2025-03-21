@@ -6,6 +6,11 @@ export type UpdateTaskDTO = CreateTaskFormType & {
   id: number;
 };
 
+export type UpdateTaskPosition = {
+  activeId: number;
+  overId: number;
+};
+
 export type getTaskInfoDTO = {
   status: string | undefined;
   dueDate: string | undefined;

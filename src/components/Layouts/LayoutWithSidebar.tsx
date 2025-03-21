@@ -33,7 +33,7 @@ export const LayoutWithSidebar = () => {
     >
       <PrimarySidebar />
       <SidebarInset className="w-full bg-white h-full overflow-y-hidden">
-        <div className="relative w-full h-[calc(100vh-80px)] overflow-y-auto">
+        <div className="relative w-full h-100vh overflow-y-auto">
           <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-gray-50/80 to-zinc-100/50">
             <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 mix-blend-soft-light" />
           </div>

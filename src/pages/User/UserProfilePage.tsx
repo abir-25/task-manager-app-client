@@ -60,9 +60,7 @@ export const UserProfilePage = () => {
           </Button>
         </div>
 
-        {/* Main Content */}
         <div className="grid grid-cols-12 gap-6">
-          {/* Left Column - Profile Card */}
           <div className="col-span-12 md:col-span-4">
             <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
               <div className="p-6 text-center">
@@ -85,9 +83,7 @@ export const UserProfilePage = () => {
             </div>
           </div>
 
-          {/* Right Column - Info Cards */}
           <div className="col-span-12 md:col-span-8 space-y-6">
-            {/* Personal Information Card */}
             <div className="bg-white rounded-3xl shadow-xl p-6">
               <h3 className="text-xl font-semibold mb-6 text-slate-800">
                 Personal Information

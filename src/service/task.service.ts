@@ -1,4 +1,9 @@
-import { CreateTaskDTO, getTaskInfoDTO, UpdateTaskDTO } from "@/types/api.dto";
+import {
+  CreateTaskDTO,
+  getTaskInfoDTO,
+  UpdateTaskDTO,
+  UpdateTaskPosition,
+} from "@/types/api.dto";
 import { TaskInfo } from "@/types/types";
 import { toast } from "react-toastify";
 import { apiPrivateClient } from "./httpModule/client";
@@ -67,6 +72,13 @@ class TaskService extends WithUserID {
       toast.success(result.message);
       return result.data;
     }
+
+    toast.error(result.message);
+    throw new Error(result.message);
+  }
+
+  async updateTaskPosition(payload: UpdateTaskPosition) {
+    const result = await this.http.post<[]>(`update-task-position`, payload);
 
     toast.error(result.message);
     throw new Error(result.message);
