@@ -1,8 +1,10 @@
 import { EmptyPageState } from "@/components/EmptyPage/EmptyPage";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
-import { taskQueryService } from "@/service/queries/task.queries";
+import {
+  GET_TASK_LIST,
+  taskQueryService,
+} from "@/service/queries/task.queries";
 import { useModal } from "@ebay/nice-modal-react";
 import { PlusCircle, Users2, CalendarIcon } from "lucide-react";
 import { CreateTaskModal } from "./components/CreateTaskModals/CreateTaskModal";
@@ -24,32 +26,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { StatusEnum, TaskInfo } from "@/types/types";
+import { StatusEnum, TaskList } from "@/types/types";
 import dayjs from "dayjs";
 import { Input } from "@/components/ui/input";
-import Task from "./components/Task";
 import {
   DndContext,
   closestCenter,
-  KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
+  TouchSensor,
 } from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import TaskContainer from "./components/TaskContainer";
+import { appQueryClient } from "@/lib/reactQueryClient";
 
 export const TaskManagement = () => {
   const [searchKey, setSearchKey] = useState<string>();
   const [selectedStatus, setSelectedStatus] = useState<string>();
   const [selectedDate, setSelectedDate] = useState<string>();
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [taskListData, setTaskListData] = useState<TaskInfo[][]>([]);
+  const [taskListData, setTaskListData] = useState<TaskList>();
 
   const createTaskModal = useModal(CreateTaskModal);
   const { data: taskList, isLoading } = taskQueryService.useGetTaskList({
@@ -57,12 +53,15 @@ export const TaskManagement = () => {
     dueDate: selectedDate,
     search: searchKey,
   });
+  // console.log(taskList);
 
   const { mutate: updateTaskPosition } =
     taskQueryService.useUpdateTaskPosition();
 
   useEffect(() => {
-    setTaskListData(taskList ?? []);
+    if (taskList) {
+      setTaskListData(taskList);
+    }
   }, [taskList]);
 
   const debounceSearch = useCallback(
@@ -80,61 +79,164 @@ export const TaskManagement = () => {
     setSelectedDate(dayjs(date).format("YYYY-MM-DD"));
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  // function handleDragStart(event: any) {
+  //   const { active } = event;
+  //   const { id } = active;
+
+  //   setActiveId(id);
+  // }
+  // console.log(taskListData);
+
+  function findContainer(id: number) {
+    if (taskListData && id) {
+      // if (id in taskListData) {
+      //   return id;
+      // }
+
+      return Object.keys(taskListData).find((key) =>
+        taskListData[key as keyof TaskList]?.find((task) => task.id === id)
+      );
+    }
+  }
+
+  // function handleDragOver(event: any) {
+  //   console.log(4324);
+  //   const { active, over, draggingRect } = event;
+
+  //   if (active && over) {
+  //     const { id: activeId } = active;
+  //     const { id: overId } = over;
+
+  //     // Find the containers
+  //     const activeContainer = findContainer(activeId);
+  //     const overContainer = findContainer(overId);
+
+  //     if (
+  //       !activeContainer ||
+  //       !overContainer ||
+  //       activeContainer === overContainer
+  //     ) {
+  //       return;
+  //     }
+
+  //     setTaskListData((prev: TaskList | undefined) => {
+  //       if (!prev) return prev;
+  //       // Get the task lists directly from the object
+  //       const activeGroup = prev[activeContainer as keyof TaskList];
+  //       const overGroup = prev[overContainer as keyof TaskList];
+
+  //       if (!activeGroup || !overGroup) return prev;
+
+  //       // Find the task being moved
+  //       const activeIndex = activeGroup.findIndex(
+  //         (task) => task.id === activeId
+  //       );
+  //       const overIndex = overGroup.findIndex((task) => task.id === overId);
+
+  //       if (activeIndex === -1) return prev; // Ensure the task exists
+
+  //       // Extract the task being moved
+  //       const [movedTask] = activeGroup.splice(activeIndex, 1);
+
+  //       let newIndex = overIndex >= 0 ? overIndex : overGroup.length;
+  //       newIndex = Math.min(newIndex, overGroup.length); // Ensure index is within bounds
+
+  //       // Insert into the new column
+  //       overGroup.splice(newIndex, 0, movedTask);
+
+  //       // Return the updated state object
+  //       return {
+  //         ...prev,
+  //         [activeContainer]: [...activeGroup], // Update source column
+  //         [overContainer]: [...overGroup], // Update target column
+  //       };
+  //     });
+  //   }
+  // }
+
+  function handleDragEnd(event: any) {
     const { active, over } = event;
-    if (!over || active.id === over.id) return;
+    if (!active || !over) return;
 
-    if (!taskList) {
-      return;
+    const { id: activeId } = active;
+    const { id: overId } = over;
+
+    const activeContainer = findContainer(activeId);
+    const overContainer = findContainer(overId);
+
+    if (!activeContainer || !overContainer) return;
+
+    setTaskListData((prev: TaskList | undefined) => {
+      if (!prev) return prev;
+
+      const activeGroup = [...prev[activeContainer as keyof TaskList]];
+      const overGroup =
+        activeContainer === overContainer
+          ? activeGroup
+          : [...prev[overContainer as keyof TaskList]];
+
+      const activeIndex = activeGroup.findIndex((task) => task.id === activeId);
+      if (activeIndex === -1) return prev;
+
+      const [movedTask] = activeGroup.splice(activeIndex, 1);
+
+      const overIndex = overGroup.findIndex((task) => task.id === overId);
+      const newIndex = overIndex >= 0 ? overIndex : overGroup.length;
+
+      overGroup.splice(newIndex, 0, movedTask);
+
+      return {
+        ...prev,
+        [activeContainer]: activeGroup,
+        [overContainer]: overGroup,
+      };
+    });
+
+    if (activeId !== overId || activeContainer !== overContainer) {
+      updateTaskPosition(
+        { activeId, overId },
+        {
+          onSuccess: () => {
+            appQueryClient.invalidateQueries({
+              queryKey: [GET_TASK_LIST],
+            });
+          },
+        }
+      );
     }
+  }
 
-    const columnIndex = taskList?.findIndex((column) =>
-      column.some((task) => task.id === active.id)
-    );
-
-    if (columnIndex === -1) return;
-
-    const updatedTasks = [...taskList[columnIndex]];
-    const oldIndex = updatedTasks.findIndex((task) => task.id === active.id);
-    const newIndex = updatedTasks.findIndex((task) => task.id === over.id);
-
-    if (oldIndex !== -1 && newIndex !== -1) {
-      const reorderedTasks = arrayMove(updatedTasks, oldIndex, newIndex);
-      setTaskListData((prevTaskList) => {
-        const newTaskList = [...prevTaskList];
-        newTaskList[columnIndex] = reorderedTasks;
-        return newTaskList;
-      });
-    }
-
-    const payload = {
-      activeId: Number(active.id),
-      overId: Number(over.id),
-    };
-    updateTaskPosition(payload);
-  };
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 30,
+        delay: 100,
+      },
+    }),
+    useSensor(TouchSensor)
+  );
 
   return (
     <div className="container mx-auto py-5 px-4">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 md:mb-8">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">Tasks</h1>
           <p className="text-muted-foreground mt-1">
             Create and manage tasks in one place
           </p>
         </div>
-        <Button onClick={handleCreateTask}>
+        <Button onClick={handleCreateTask} className="mt-2 md:mt-0">
           <PlusCircle className="h-5 w-5" />
           Create Task
         </Button>
       </div>
-      <div className="flex itemc-center justify-start mb-3">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-start mb-3">
         <div className="mr-3">
           <Select
             value={selectedStatus}
             onValueChange={(value) => setSelectedStatus(value)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-90 md:w-[240px]">
               <SelectValue placeholder="Select Status" />
             </SelectTrigger>
             <SelectContent>
@@ -150,7 +252,7 @@ export const TaskManagement = () => {
           </Select>
         </div>
 
-        <div className="mr-3">
+        <div className="mr-3 mt-2 md:mt-0">
           <Popover onOpenChange={setCalendarOpen} open={calendarOpen}>
             <PopoverTrigger
               asChild
@@ -158,7 +260,7 @@ export const TaskManagement = () => {
             >
               <Button
                 variant={"outline"}
-                className="w-[240px] pl-3 text-left font-normal"
+                className="w-90 md:w-[240px] pl-3 text-left font-normal"
               >
                 {selectedDate ? (
                   format(selectedDate, "PPP")
@@ -185,8 +287,9 @@ export const TaskManagement = () => {
           </Popover>
         </div>
 
-        <div>
+        <div className="mt-2 md:mt-0">
           <Input
+            className=" w-90 md:w-[240px]"
             type="text"
             placeholder="Search by task name"
             onChange={(e) => debounceSearch(e.target.value)}
@@ -196,36 +299,28 @@ export const TaskManagement = () => {
 
       {isLoading ? (
         <TaskListSkeleton />
-      ) : taskListData?.length === 0 ? (
+      ) : taskListData && Object.keys(taskListData)?.length === 0 ? (
         <EmptyPageState
           Icon={Users2}
           title="No Task Found"
           description="Create a new task to get started"
         />
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {taskListData?.map((tasks, index) => (
-            <div key={index} className="bg-gray-100 p-3 min-h-screen">
-              <p className="pt-1 mb-3 text-sm text-slate-500 uppercase">
-                {index === 0
-                  ? StatusEnum.ToDo
-                  : index === 1
-                  ? StatusEnum.InProgress
-                  : StatusEnum.Done}
-                <span className="font-bold ml-1">{tasks.length}</span>
-              </p>
-              <DndContext
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext items={tasks.map((task) => task.id)}>
-                  {tasks?.map((task, index1) => (
-                    <Task task={task} key={index1} />
-                  ))}
-                </SortableContext>
-              </DndContext>
-            </div>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <DndContext
+            collisionDetection={closestCenter}
+            // onDragOver={handleDragOver}
+            // onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            sensors={sensors}
+          >
+            <TaskContainer id="toDo" tasks={taskListData?.todo} />
+            <TaskContainer id="inProgress" tasks={taskListData?.inProgress} />
+            <TaskContainer id="done" tasks={taskListData?.done} />
+            {/* {taskListData?.map((tasks, index) => (
+              <TaskContainer id={index} tasks={tasks} />
+            ))} */}
+          </DndContext>
         </div>
       )}
     </div>

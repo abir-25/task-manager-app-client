@@ -1,6 +1,13 @@
-import { CreateTaskDTO, getTaskInfoDTO, UpdateTaskDTO, UpdateTaskPosition } from "@/types/api.dto";
+import {
+  CreateTaskDTO,
+  getTaskInfoDTO,
+  UpdateTaskDTO,
+  UpdateTaskPosition,
+} from "@/types/api.dto";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { taskService } from "../task.service";
+import { TaskInfo } from "@/types/types";
+import { appQueryClient } from "@/lib/reactQueryClient";
 
 export const GET_TASK_LIST = "GET_TASK_LIST";
 export const GET_TASK_INFO_BY_ID = "GET_TASK_INFO_BY_ID";
@@ -15,8 +22,11 @@ const useGetTaskList = (payload: getTaskInfoDTO) => {
         (task) => task.status === "In Progress"
       );
       const doneTasks = data.filter((task) => task.status === "Done");
-
-      return [toDoTasks, inProgressTasks, doneTasks];
+      return {
+        todo: toDoTasks,
+        inProgress: inProgressTasks,
+        done: doneTasks,
+      };
     },
   });
 };
@@ -49,7 +59,23 @@ const useDeleteTask = () => {
 
 const useUpdateTaskPosition = () => {
   return useMutation({
-    mutationFn: (payload: UpdateTaskPosition) => taskService.updateTaskPosition(payload),
+    mutationFn: (payload: UpdateTaskPosition) =>
+      taskService.updateTaskPosition(payload),
+  });
+};
+
+export const optimisticUpdateSubTask = (data: TaskInfo) => {
+  const KEY = [GET_TASK_LIST];
+
+  appQueryClient.setQueriesData<TaskInfo[]>({ queryKey: KEY }, (prevData) => {
+    if (!prevData) return;
+    console.log(prevData);
+    return prevData.map((task) => {
+      if (task.id === data.id) {
+        return data;
+      }
+      return task;
+    });
   });
 };
 
@@ -59,5 +85,5 @@ export const taskQueryService = {
   useCreateTask,
   useUpdateTask,
   useDeleteTask,
-  useUpdateTaskPosition
+  useUpdateTaskPosition,
 };

@@ -78,10 +78,8 @@ class TaskService extends WithUserID {
   }
 
   async updateTaskPosition(payload: UpdateTaskPosition) {
-    const result = await this.http.post<[]>(`update-task-position`, payload);
-
-    toast.error(result.message);
-    throw new Error(result.message);
+    await this.http.post<[]>(`update-task-position`, payload);
+    return true;
   }
 }
 

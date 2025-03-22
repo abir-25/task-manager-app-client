@@ -27,3 +27,9 @@ export type TaskInfo = {
   createDate: string;
   updatedDate: string | null;
 };
+
+export type TaskList = {
+  todo: TaskInfo[];
+  inProgress: TaskInfo[];
+  done: TaskInfo[];
+};

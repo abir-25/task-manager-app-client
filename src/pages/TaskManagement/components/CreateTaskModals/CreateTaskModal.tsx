@@ -30,7 +30,6 @@ import {
 import { TaskInfo } from "@/types/types";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { createTaskFormSchema, CreateTaskFormType } from "./types";
 import {
@@ -43,6 +42,7 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import { appQueryClient } from "@/lib/reactQueryClient";
 
 type Props = {
   taskId?: number;
@@ -54,7 +54,6 @@ const status = ["To Do", "In Progress", "Done"];
 
 export const CreateTaskModal = NiceModal.create(
   ({ taskId, isUpdating = false, initialData }: Props) => {
-    const queryClient = useQueryClient();
     const modal = useModal();
     const [calendarOpen, setCalendarOpen] = useState(false);
 
@@ -80,7 +79,7 @@ export const CreateTaskModal = NiceModal.create(
 
     const handleSubmit = (data: CreateTaskFormType) => {
       const onSuccess = () => {
-        queryClient.invalidateQueries({
+        appQueryClient.invalidateQueries({
           queryKey: isUpdating
             ? [GET_TASK_INFO_BY_ID, initialData?.id]
             : [GET_TASK_LIST],
@@ -134,9 +133,7 @@ export const CreateTaskModal = NiceModal.create(
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Description
-                    </FormLabel>
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Textarea {...field} />
                     </FormControl>

@@ -6,8 +6,7 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { Home, File } from "lucide-react";
-import { useLocation } from "react-router-dom";
-// import { UserRole, UserRoleGuard } from "../guards/UserRoleGuard";
+import { NavLink, useLocation } from "react-router-dom";
 
 type NavLink = {
   name: string;
@@ -44,7 +43,6 @@ export const SidebarNav = () => {
     <SidebarGroup>
       <SidebarMenu>
         {navlinks.map((item) => (
-          // <UserRoleGuard minimumRole={item.minRole}>
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton
               asChild
@@ -54,13 +52,12 @@ export const SidebarNav = () => {
                 isActive(item.url) && "bg-accent font-medium"
               )}
             >
-              <a href={item.url}>
+              <NavLink to={item.url}>
                 <item.icon className="mr-2" />
-                <span>{item.name}</span>
-              </a>
+                {item.name}
+              </NavLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          //</UserRoleGuard>
         ))}
       </SidebarMenu>
     </SidebarGroup>
