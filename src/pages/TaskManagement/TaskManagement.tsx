@@ -252,7 +252,7 @@ export const TaskManagement = () => {
               <Calendar
                 mode="single"
                 selected={selectedDate ? new Date(selectedDate) : undefined}
-                onSelect={(date: Date) => {
+                onSelect={(date) => {
                   if (date) {
                     handleDateSelect(date);
                   }
