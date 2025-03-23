@@ -5,7 +5,12 @@ import {
   taskQueryService,
 } from "@/service/queries/task.queries";
 import { useModal } from "@ebay/nice-modal-react";
-import { PlusCircle, CalendarIcon, DeleteIcon } from "lucide-react";
+import {
+  PlusCircle,
+  CalendarIcon,
+  DeleteIcon,
+  ArrowUpDown,
+} from "lucide-react";
 import { CreateTaskModal } from "./components/CreateTaskModals/CreateTaskModal";
 import { TaskListSkeleton } from "./components/TaskSkeletons/TaskListSkeleton";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -40,6 +45,14 @@ import {
 import TaskContainer from "./components/TaskContainer";
 import { appQueryClient } from "@/lib/reactQueryClient";
 import Task from "./components/Task";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const TaskManagement = () => {
   const [searchKey, setSearchKey] = useState<string>();
@@ -49,6 +62,10 @@ export const TaskManagement = () => {
   const [taskListData, setTaskListData] = useState<TaskList>();
   const [activeId, setActiveId] = useState<TaskInfo | undefined>();
   const [resetFilter, setResetFilter] = useState<boolean>(false);
+  const [titleSortingAsc, setTitleSortingAsc] = useState(false);
+  const [titleSortingDesc, setTitleSortingDesc] = useState(false);
+  const [dueDateSortingAsc, setDueDateSortingAsc] = useState(false);
+  const [dueDateSortingDesc, setDueDateSortingDesc] = useState(false);
 
   const createTaskModal = useModal(CreateTaskModal);
   const { data: taskList, isLoading } = taskQueryService.useGetTaskList({
@@ -65,6 +82,47 @@ export const TaskManagement = () => {
       setTaskListData(taskList);
     }
   }, [taskList]);
+  console.log(taskList);
+
+  const handleSortChange = (sortType: string) => {
+    setTitleSortingAsc(sortType === "titleAsc");
+    setTitleSortingDesc(sortType === "titleDesc");
+    setDueDateSortingAsc(sortType === "dueAsc");
+    setDueDateSortingDesc(sortType === "dueDesc");
+
+    setTaskListData((prev) => sortTasks(prev));
+  };
+
+  const sortTasks = (tasks: TaskList | undefined): TaskList | undefined => {
+    if (!tasks) return undefined;
+
+    return {
+      todo: [...tasks.todo].sort((a, b) => sortingLogic(a, b)),
+      inProgress: [...tasks.inProgress].sort((a, b) => sortingLogic(a, b)),
+      done: [...tasks.done].sort((a, b) => sortingLogic(a, b)),
+    };
+  };
+
+  const sortingLogic = (a: TaskInfo, b: TaskInfo) => {
+    const aFirstChar = a.name.charAt(0).toLowerCase();
+    const bFirstChar = b.name.charAt(0).toLowerCase();
+
+    if (titleSortingAsc) {
+      return aFirstChar.localeCompare(bFirstChar);
+    }
+    if (titleSortingDesc) {
+      return bFirstChar.localeCompare(aFirstChar);
+    }
+
+    if (dueDateSortingAsc) {
+      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+    }
+    if (dueDateSortingDesc) {
+      return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
+    }
+
+    return 0;
+  };
 
   const prevFilters = useRef({ searchKey, selectedStatus, selectedDate });
 
@@ -277,12 +335,45 @@ export const TaskManagement = () => {
           />
         </div>
 
+        <div className="rounded-sm flex items-center border-1 ml-0 md:ml-2 py-[7px] px-2 cursor-pointer">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <ArrowUpDown className="ml-auto h-5 w-5 opacity-50 cursor-pointer" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuCheckboxItem
+                checked={titleSortingAsc}
+                onCheckedChange={() => handleSortChange("titleAsc")}
+              >
+                Sort Ascending By Title
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={titleSortingDesc}
+                onCheckedChange={() => handleSortChange("titleDesc")}
+              >
+                Sort Descending By Title
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={dueDateSortingAsc}
+                onCheckedChange={() => handleSortChange("dueAsc")}
+              >
+                Sort Ascending By Due Date
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={dueDateSortingDesc}
+                onCheckedChange={() => handleSortChange("dueDesc")}
+              >
+                Sort Descending By Due Date
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         {resetFilter && (
           <div
-            className="rounded-sm flex items-center border-1 ml-0 md:ml-2 py-1 px-2 cursor-pointer"
+            className="rounded-sm flex items-center border-1 ml-0 md:ml-2 py-[6px] px-2 cursor-pointer"
             onClick={handleResetFilter}
           >
-            <DeleteIcon className="ml-auto h-5 w-5 opacity-50" />{" "}
+            <DeleteIcon className="ml-auto h-5 w-5 opacity-50" />
             <span className="ml-1">Reset</span>
           </div>
         )}
