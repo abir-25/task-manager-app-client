@@ -148,7 +148,7 @@ export const Task = (props: TaskInfoProps) => {
                 onDoubleClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();
-                  setCalendarOpen(true); // Ensures popover opens
+                  setCalendarOpen(true);
                 }}
               >
                 <CalcIcon size={12} />

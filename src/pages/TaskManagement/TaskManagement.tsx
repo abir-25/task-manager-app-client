@@ -1,4 +1,3 @@
-import { EmptyPageState } from "@/components/EmptyPage/EmptyPage";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -6,10 +5,10 @@ import {
   taskQueryService,
 } from "@/service/queries/task.queries";
 import { useModal } from "@ebay/nice-modal-react";
-import { PlusCircle, Users2, CalendarIcon } from "lucide-react";
+import { PlusCircle, CalendarIcon, DeleteIcon } from "lucide-react";
 import { CreateTaskModal } from "./components/CreateTaskModals/CreateTaskModal";
 import { TaskListSkeleton } from "./components/TaskSkeletons/TaskListSkeleton";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "lodash-es/debounce";
 import { format } from "date-fns";
 import {
@@ -26,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { StatusEnum, TaskList } from "@/types/types";
+import { StatusEnum, TaskInfo, TaskList } from "@/types/types";
 import dayjs from "dayjs";
 import { Input } from "@/components/ui/input";
 import {
@@ -36,16 +35,20 @@ import {
   useSensor,
   useSensors,
   TouchSensor,
+  DragOverlay,
 } from "@dnd-kit/core";
 import TaskContainer from "./components/TaskContainer";
 import { appQueryClient } from "@/lib/reactQueryClient";
+import Task from "./components/Task";
 
 export const TaskManagement = () => {
   const [searchKey, setSearchKey] = useState<string>();
-  const [selectedStatus, setSelectedStatus] = useState<string>();
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedDate, setSelectedDate] = useState<string>();
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [taskListData, setTaskListData] = useState<TaskList>();
+  const [activeId, setActiveId] = useState<TaskInfo | undefined>();
+  const [resetFilter, setResetFilter] = useState<boolean>(false);
 
   const createTaskModal = useModal(CreateTaskModal);
   const { data: taskList, isLoading } = taskQueryService.useGetTaskList({
@@ -53,7 +56,6 @@ export const TaskManagement = () => {
     dueDate: selectedDate,
     search: searchKey,
   });
-  // console.log(taskList);
 
   const { mutate: updateTaskPosition } =
     taskQueryService.useUpdateTaskPosition();
@@ -63,6 +65,31 @@ export const TaskManagement = () => {
       setTaskListData(taskList);
     }
   }, [taskList]);
+
+  const prevFilters = useRef({ searchKey, selectedStatus, selectedDate });
+
+  useEffect(() => {
+    const isReset =
+      searchKey === "" && selectedStatus === "all" && selectedDate === "";
+
+    if (isReset) {
+      setResetFilter(false);
+    } else if (
+      prevFilters.current.searchKey !== searchKey ||
+      prevFilters.current.selectedStatus !== selectedStatus ||
+      prevFilters.current.selectedDate !== selectedDate
+    ) {
+      setResetFilter(true);
+    }
+
+    prevFilters.current = { searchKey, selectedStatus, selectedDate };
+  }, [searchKey, selectedStatus, selectedDate]);
+
+  const handleResetFilter = () => {
+    setSelectedStatus("all");
+    setSelectedDate("");
+    setSearchKey("");
+  };
 
   const debounceSearch = useCallback(
     debounce((val: string) => {
@@ -79,87 +106,36 @@ export const TaskManagement = () => {
     setSelectedDate(dayjs(date).format("YYYY-MM-DD"));
   };
 
-  // function handleDragStart(event: any) {
-  //   const { active } = event;
-  //   const { id } = active;
-
-  //   setActiveId(id);
-  // }
-  // console.log(taskListData);
-
-  function findContainer(id: number) {
+  function handleDragStart(event: any) {
+    const { active } = event;
+    const { id } = active;
     if (taskListData && id) {
-      // if (id in taskListData) {
-      //   return id;
-      // }
-
-      return Object.keys(taskListData).find((key) =>
-        taskListData[key as keyof TaskList]?.find((task) => task.id === id)
-      );
+      const foundTask = Object.values(taskListData)
+        .flat()
+        .find((task) => task.id === id);
+      setActiveId(foundTask);
     }
   }
 
-  // function handleDragOver(event: any) {
-  //   console.log(4324);
-  //   const { active, over, draggingRect } = event;
-
-  //   if (active && over) {
-  //     const { id: activeId } = active;
-  //     const { id: overId } = over;
-
-  //     // Find the containers
-  //     const activeContainer = findContainer(activeId);
-  //     const overContainer = findContainer(overId);
-
-  //     if (
-  //       !activeContainer ||
-  //       !overContainer ||
-  //       activeContainer === overContainer
-  //     ) {
-  //       return;
-  //     }
-
-  //     setTaskListData((prev: TaskList | undefined) => {
-  //       if (!prev) return prev;
-  //       // Get the task lists directly from the object
-  //       const activeGroup = prev[activeContainer as keyof TaskList];
-  //       const overGroup = prev[overContainer as keyof TaskList];
-
-  //       if (!activeGroup || !overGroup) return prev;
-
-  //       // Find the task being moved
-  //       const activeIndex = activeGroup.findIndex(
-  //         (task) => task.id === activeId
-  //       );
-  //       const overIndex = overGroup.findIndex((task) => task.id === overId);
-
-  //       if (activeIndex === -1) return prev; // Ensure the task exists
-
-  //       // Extract the task being moved
-  //       const [movedTask] = activeGroup.splice(activeIndex, 1);
-
-  //       let newIndex = overIndex >= 0 ? overIndex : overGroup.length;
-  //       newIndex = Math.min(newIndex, overGroup.length); // Ensure index is within bounds
-
-  //       // Insert into the new column
-  //       overGroup.splice(newIndex, 0, movedTask);
-
-  //       // Return the updated state object
-  //       return {
-  //         ...prev,
-  //         [activeContainer]: [...activeGroup], // Update source column
-  //         [overContainer]: [...overGroup], // Update target column
-  //       };
-  //     });
-  //   }
-  // }
+  function findContainer(id: number) {
+    if (taskListData && id) {
+      const container = Object.keys(taskListData).find((key) =>
+        taskListData[key as keyof TaskList]?.find((task) => task.id === id)
+      );
+      if (container) {
+        return container;
+      } else {
+        return Object.keys(taskListData).find((key) => key === String(id));
+      }
+    }
+  }
 
   function handleDragEnd(event: any) {
     const { active, over } = event;
     if (!active || !over) return;
 
-    const { id: activeId } = active;
-    const { id: overId } = over;
+    const activeId = active.id;
+    const overId = over.id;
 
     const activeContainer = findContainer(activeId);
     const overContainer = findContainer(overId);
@@ -169,11 +145,14 @@ export const TaskManagement = () => {
     setTaskListData((prev: TaskList | undefined) => {
       if (!prev) return prev;
 
-      const activeGroup = [...prev[activeContainer as keyof TaskList]];
+      const updatedTaskList = { ...prev };
+      const activeGroup = [
+        ...updatedTaskList[activeContainer as keyof TaskList],
+      ];
       const overGroup =
         activeContainer === overContainer
           ? activeGroup
-          : [...prev[overContainer as keyof TaskList]];
+          : [...updatedTaskList[overContainer as keyof TaskList]];
 
       const activeIndex = activeGroup.findIndex((task) => task.id === activeId);
       if (activeIndex === -1) return prev;
@@ -186,20 +165,18 @@ export const TaskManagement = () => {
       overGroup.splice(newIndex, 0, movedTask);
 
       return {
-        ...prev,
+        ...updatedTaskList,
         [activeContainer]: activeGroup,
         [overContainer]: overGroup,
       };
     });
-
-    if (activeId !== overId || activeContainer !== overContainer) {
+    setActiveId(undefined);
+    if (activeContainer !== overContainer || activeId !== overId) {
       updateTaskPosition(
         { activeId, overId },
         {
           onSuccess: () => {
-            appQueryClient.invalidateQueries({
-              queryKey: [GET_TASK_LIST],
-            });
+            appQueryClient.invalidateQueries({ queryKey: [GET_TASK_LIST] });
           },
         }
       );
@@ -275,7 +252,7 @@ export const TaskManagement = () => {
               <Calendar
                 mode="single"
                 selected={selectedDate ? new Date(selectedDate) : undefined}
-                onSelect={(date) => {
+                onSelect={(date: Date) => {
                   if (date) {
                     handleDateSelect(date);
                   }
@@ -292,34 +269,44 @@ export const TaskManagement = () => {
             className=" w-90 md:w-[240px]"
             type="text"
             placeholder="Search by task name"
-            onChange={(e) => debounceSearch(e.target.value)}
+            value={searchKey}
+            onChange={(e) => {
+              setSearchKey(e.target.value);
+              debounceSearch(e.target.value);
+            }}
           />
         </div>
+
+        {resetFilter && (
+          <div
+            className="rounded-sm flex items-center border-1 ml-0 md:ml-2 py-1 px-2 cursor-pointer"
+            onClick={handleResetFilter}
+          >
+            <DeleteIcon className="ml-auto h-5 w-5 opacity-50" />{" "}
+            <span className="ml-1">Reset</span>
+          </div>
+        )}
       </div>
 
       {isLoading ? (
         <TaskListSkeleton />
-      ) : taskListData && Object.keys(taskListData)?.length === 0 ? (
-        <EmptyPageState
-          Icon={Users2}
-          title="No Task Found"
-          description="Create a new task to get started"
-        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <DndContext
             collisionDetection={closestCenter}
-            // onDragOver={handleDragOver}
-            // onDragStart={handleDragStart}
+            onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             sensors={sensors}
           >
-            <TaskContainer id="toDo" tasks={taskListData?.todo} />
-            <TaskContainer id="inProgress" tasks={taskListData?.inProgress} />
-            <TaskContainer id="done" tasks={taskListData?.done} />
-            {/* {taskListData?.map((tasks, index) => (
-              <TaskContainer id={index} tasks={tasks} />
-            ))} */}
+            <TaskContainer id="todo" tasks={taskListData?.todo || []} />
+            <TaskContainer
+              id="inProgress"
+              tasks={taskListData?.inProgress || []}
+            />
+            <TaskContainer id="done" tasks={taskListData?.done || []} />
+            <DragOverlay>
+              {activeId ? <Task task={activeId} key={activeId.id} /> : null}
+            </DragOverlay>
           </DndContext>
         </div>
       )}
