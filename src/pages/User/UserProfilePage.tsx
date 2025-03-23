@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useGlobalStore } from "@/store/global-store";
 import { Mail, Pencil, Phone } from "lucide-react";
 import { useState } from "react";
 import { UserProfileForm } from "./components/UserProfileForm/UserProfileForm";

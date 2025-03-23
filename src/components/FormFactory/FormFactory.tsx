@@ -200,7 +200,7 @@ export const FormFactory = <
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(
-          (data) => {
+          (data: any) => {
             onSubmit(data);
           },
           (r) => console.log("error", r)

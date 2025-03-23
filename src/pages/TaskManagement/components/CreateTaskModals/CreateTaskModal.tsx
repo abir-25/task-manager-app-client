@@ -220,7 +220,7 @@ export const CreateTaskModal = NiceModal.create(
                           selected={
                             field.value ? new Date(field.value) : undefined
                           }
-                          onSelect={(date) => {
+                          onSelect={(date: Date) => {
                             field.onChange(dayjs(date).format("YYYY-MM-DD"));
                             setCalendarOpen(false);
                           }}
