@@ -77,7 +77,6 @@ export class HttpService {
       const form = new FormData();
 
       Object.entries(body).forEach(([key, value]) => {
-        // check if value is object and not array and not File
         if (typeof value === 'object' && !Array.isArray(value) && !(value instanceof File)) {
           form.append(key, JSON.stringify(value));
           return;
@@ -88,7 +87,6 @@ export class HttpService {
           return;
         }
 
-        // Convert number to string before appending
         form.append(key, typeof value === 'number' ? value.toString() : value);
       });
 

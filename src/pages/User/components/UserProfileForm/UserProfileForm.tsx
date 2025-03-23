@@ -54,7 +54,6 @@ export const UserProfileForm = ({ data, onCancel }: UserProfileFormProps) => {
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Check if file size is greater than 1MB (1048576 bytes)
       if (file.size > 1048576) {
         form.setError("profileImg", {
           type: "manual",

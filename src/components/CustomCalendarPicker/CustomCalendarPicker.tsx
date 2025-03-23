@@ -24,7 +24,6 @@ export function CustomCalendarPicker({
     "July", "August", "September", "October", "November", "December"
   ];
 
-  // Generate year options (100 years back from current year)
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
