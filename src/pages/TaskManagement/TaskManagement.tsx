@@ -82,7 +82,6 @@ export const TaskManagement = () => {
       setTaskListData(taskList);
     }
   }, [taskList]);
-  console.log(taskList);
 
   const handleSortChange = (sortType: string) => {
     setTitleSortingAsc(sortType === "titleAsc");

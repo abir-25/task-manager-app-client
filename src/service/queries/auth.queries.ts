@@ -17,7 +17,6 @@ const useLogin = () => {
 };
 
 const useGetUserByHash = (inviteHash: string) => {
-  console.log({ inviteHash });
   return useQuery({
     queryKey: [GET_USER_INFO_BY_HASH, inviteHash],
     queryFn: () => authService.getUserDetailsByInviteHash(inviteHash),

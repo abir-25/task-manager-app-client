@@ -61,7 +61,6 @@ class AuthService {
   }
 
   async getUserDetailsByInviteHash(inviteHash: string) {
-    console.log({ inviteHash });
     const result = await this.http.get<UserInfo>(`invitation/${inviteHash}`);
     if (result.status) {
       return result.data;

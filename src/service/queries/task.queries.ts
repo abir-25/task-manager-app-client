@@ -69,7 +69,6 @@ export const optimisticUpdateSubTask = (data: TaskInfo) => {
 
   appQueryClient.setQueriesData<TaskInfo[]>({ queryKey: KEY }, (prevData) => {
     if (!prevData) return;
-    console.log(prevData);
     return prevData.map((task) => {
       if (task.id === data.id) {
         return data;

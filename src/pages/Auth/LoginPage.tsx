@@ -37,7 +37,6 @@ export const LoginPage = () => {
   const onSubmit = async (values: SignupFormType) => {
     signupMutation(values, {
       onSuccess: async (data) => {
-        console.log({ data });
         hydrateStore(data);
 
         const userInfo = await userService.getUserInfo();

@@ -7,7 +7,6 @@ export const Dashboard = () => {
   const userName = useGlobalStore((s) => s.userInfo?.name);
   const { data: taskStatusReport, isLoading: isTaskStatusReportLoading } =
     dashboardQueries.useGetTaskStatusReportData();
-  console.log(taskStatusReport);
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between bg-gradient-to-r from-primary/10 to-accent/5 p-4 rounded-xl">
