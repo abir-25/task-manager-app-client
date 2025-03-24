@@ -1,54 +1,115 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![Logo](https://api-task.agameeit.com/images/logo_xs.png)
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Task Manager App (Frontend)
 
-## Expanding the ESLint configuration
+**Built with React.js (Vite) + TypeScript**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+This repository contains the frontend of the Task Manager App, built using React.js with Vite for fast development and optimized performance. The application provides an intuitive UI for managing tasks efficiently.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+
+## 🚀 Features
+
+- User authentication (login/signup).
+- Create, edit and delete tasks.
+- Drag & Drop task to change status or its position.
+- Task filtering and sorting.
+- Responsive design for mobile and desktop.
+- State management using React Query or Redux.
+- Form validation with Zod.
+- API integration with Laravel backend.
+- PWA Support
+
+
+## ⚙️ Tech Stack
+
+**Frontend:** React.js (Vite), TypeScript
+
+**Styling:** shadcn/ui component, Tailwind CSS
+
+**State Management:** React Query, Zustand
+
+**API Client:** HTTP fetch
+
+**Form Validation:** Zod
+
+
+## 📦 Installation & Setup
+
+Clone the project
+
+```bash
+  git clone https://github.com/abir-25/task-manager-app-client.git
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Go to the project directory
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+  cd task-manager-client
 ```
+
+Install dependencies
+
+```bash
+  pnpm install
+```
+
+Configure environment variable:
+- Create a .env file in the root directory.
+- Add the following variable
+```bash
+  VITE_REACT_APP_API_URL=https://api-task.agameeit.com/api/v1
+
+```
+
+Start the development server
+
+```bash
+  pnpm run dev
+```
+
+
+## 🔌 Build for Production
+
+To build this project run
+
+```bash
+  pnpm run build
+```
+
+## 🛠️ Deployment
+
+- The build files are located in the **dist** folder.
+- You can deploy it to services like **Vercel**, **Netlify**, or a **custom server**.
+
+## 🔗 Live Site URL
+[![Task Manager App](https://api-task.agameeit.com/images/logo_xs.png)](https://task.agameeit.com/)
+
+
+
+## Screenshots
+**App Dashboard**
+![App Screenshot](https://api-task.agameeit.com/images/task_dashboard.png)
+
+**Create Task**
+![App Screenshot](https://api-task.agameeit.com/images/task_create.png)
+
+**Task List**
+![App Screenshot](https://api-task.agameeit.com/images/task_list.png)
+
+**Drag & Drop Task**
+![App Screenshot](https://api-task.agameeit.com/images/task_drag.png)
+
+**Task Optimistic Update**
+![App Screenshot](https://api-task.agameeit.com/images/task_optimistic_update.png)
+
+**Task Sorting**
+![App Screenshot](https://api-task.agameeit.com/images/task_sorting.png)
+
+**Task Search (Debounce) By title**
+![App Screenshot](https://api-task.agameeit.com/images/task_search.png)
+
+**Task Delete**
+![App Screenshot](https://api-task.agameeit.com/images/task_delete.png)
+
