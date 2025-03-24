@@ -11,14 +11,14 @@ This repository contains the frontend of the Task Manager App, built using React
 
 ## 🚀 Features
 
-- User authentication (login/signup).
-- Create, edit and delete tasks.
-- Drag & Drop task to change status or its position.
-- Task filtering and sorting.
-- Responsive design for mobile and desktop.
-- State management using React Query or Redux.
-- Form validation with Zod.
-- API integration with Laravel backend.
+- User authentication (JWT-based)
+- Create, edit and delete tasks
+- Drag & Drop task to change status or its position
+- Task filtering and sorting
+- Responsive design for mobile and desktop
+- State management using React Query or Redux
+- Form validation with Zod
+- API integration with Laravel backend
 - PWA Support
 
 
@@ -40,33 +40,33 @@ This repository contains the frontend of the Task Manager App, built using React
 Clone the project
 
 ```bash
-  git clone https://github.com/abir-25/task-manager-app-client.git
+git clone https://github.com/abir-25/task-manager-app-client.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd task-manager-client
+cd task-manager-client
 ```
 
 Install dependencies
 
 ```bash
-  pnpm install
+pnpm install
 ```
 
-Configure environment variable:
-- Create a .env file in the root directory.
+Configure environment variable
+- Create a .env file in the root directory
 - Add the following variable
 ```bash
-  VITE_REACT_APP_API_URL=https://api-task.agameeit.com/api/v1
+VITE_REACT_APP_API_URL=https://api-task.agameeit.com/api/v1
 
 ```
 
 Start the development server
 
 ```bash
-  pnpm run dev
+pnpm run dev
 ```
 
 
@@ -75,13 +75,13 @@ Start the development server
 To build this project run
 
 ```bash
-  pnpm run build
+pnpm run build
 ```
 
 ## 🛠️ Deployment
 
-- The build files are located in the **dist** folder.
-- You can deploy it to services like **Vercel**, **Netlify**, or a **custom server**.
+- The build files are located in the **dist** folder
+- You can deploy it to services like **Vercel**, **Netlify**, or a **custom server**
 
 ## 🔗 Live Site URL
 [![Task Manager App](https://api-task.agameeit.com/images/logo_xs.png)](https://task.agameeit.com/)
